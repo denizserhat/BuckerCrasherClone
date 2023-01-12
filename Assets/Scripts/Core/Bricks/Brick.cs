@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 
-namespace Bricks
+namespace Core.Bricks
 {
     public class Brick : MonoBehaviour
     {
@@ -20,7 +19,7 @@ namespace Bricks
             {
                 isExploded = true;
                 _rigidbody.isKinematic = false;
-                _rigidbody.AddForce(Vector3.left*10,ForceMode.Impulse);
+                _rigidbody.AddForce(Vector3.left * 10, ForceMode.Impulse);
             }
         }
     }
