@@ -7,8 +7,7 @@ namespace Core.Draw
 {
     public class DrawMesh : MonoBehaviour
     {
-        [SerializeField] private float lineThickness = .25f;
-        [SerializeField] private float shapeDistance = .1f;
+        public DrawSo drawSo;
         private Camera _cam;
         private CancellationTokenSource _drawingCancellationTokenSource;
         private GameObject _drawing;
@@ -26,10 +25,8 @@ namespace Core.Draw
                 _drawingCancellationTokenSource = new CancellationTokenSource();
                 Draw();
             }
-
             if (Input.GetMouseButtonUp(0))
             {
-                _drawing.AddComponent<MeshCollider>();
                 _drawingCancellationTokenSource.Cancel();
             }
         }
@@ -37,49 +34,56 @@ namespace Core.Draw
 
         private async void Draw()
         {
+            if (_drawing != null)
+            {
+                DestroyImmediate(_drawing);
+            }
             _drawing = new GameObject("Drawing");
             _drawing.AddComponent<MeshFilter>();
             _drawing.AddComponent<MeshRenderer>();
 
-            Mesh mesh = new Mesh();
-
-            List<Vector3> vertices =  new List<Vector3>(new Vector3[8]);
-
+            
             Vector3 startPosition =
-                _cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+                _cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y,  -_cam.transform.position.z));
             Vector3 temp = new Vector3(startPosition.x, startPosition.y, 0.5f);
 
+            
+            Mesh mesh = new Mesh();
+            List<Vector3> vertices =  new List<Vector3>(new Vector3[8]);
+            
             for (int i = 0; i < vertices.Count; i++)
             {
                 vertices[i] = temp;
             }
 
             var triangles = SetTriangles();
-
-
             mesh.vertices = vertices.ToArray();
             mesh.triangles = triangles.ToArray();
-
-            _drawing.GetComponent<MeshFilter>().mesh = mesh;
-            _drawing.GetComponent<Renderer>().material.color = Color.green;
-
-            _lastMousePosition = startPosition;
-
+            
             while (!_drawingCancellationTokenSource.IsCancellationRequested)
             {
                 
+
+                #region Distance
+
+                var position = _cam.transform.position;
+                _lastMousePosition = _cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y,  -position.z));
+
                 float distance =
-                    Vector3.Distance(_cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)),
+                    Vector3.Distance(_cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -position.z)),
                         _lastMousePosition);
 
-                while (distance<shapeDistance)
+                while (distance<drawSo.shapeDistance)
                 {
-                   distance =
-                        Vector3.Distance(_cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)),
+                    distance =
+                        Vector3.Distance(_cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y,  -position.z)),
                             _lastMousePosition);
-                   await UniTask.Yield();
+                    await UniTask.Yield();
                 }
-                
+
+                #endregion
+                #region Set Faces
+
                 vertices.AddRange(new Vector3[4]);
                 triangles.AddRange(new int[30]);
 
@@ -88,14 +92,16 @@ namespace Core.Draw
                 mesh.vertices = vertices.ToArray();
                 mesh.triangles = triangles.ToArray();
 
-
-                _lastMousePosition =
-                    _cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+                #endregion
                 
+                _drawing.GetComponent<MeshFilter>().mesh = mesh;
+                _drawing.GetComponent<Renderer>().material = drawSo.shapeMaterial;
                 
                 await UniTask.Yield(cancellationToken: _drawingCancellationTokenSource.Token).SuppressCancellationThrow();
-
             }
+            _drawing.AddComponent<MeshCollider>();
+            _drawing.gameObject.layer = 8; // Platform Layer
+            _drawing.transform.tag = "Platform";
         }
 
         private List<int> SetTriangles()
@@ -207,11 +213,11 @@ namespace Core.Draw
             triangles[tIndex + 29] = vIndex6;
             
             Vector3 currentMousePosition =
-                _cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
+                _cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -_cam.transform.position.z));
             Vector3 mouseForwardVector = (currentMousePosition - _lastMousePosition).normalized;
             
-            Vector3 topRightVertex = currentMousePosition + Vector3.Cross(mouseForwardVector, Vector3.back) * lineThickness;
-            Vector3 bottomRightVertex = currentMousePosition + Vector3.Cross(mouseForwardVector, Vector3.forward) * lineThickness;
+            Vector3 topRightVertex = currentMousePosition + Vector3.Cross(mouseForwardVector, Vector3.back) * drawSo.lineThickness;
+            Vector3 bottomRightVertex = currentMousePosition + Vector3.Cross(mouseForwardVector, Vector3.forward) * drawSo.lineThickness;
             Vector3 topLeftVertex = new Vector3(topRightVertex.x, topRightVertex.y, 1);
             Vector3 bottomLeftVertex = new Vector3(bottomRightVertex.x, bottomRightVertex.y, 1);
             
