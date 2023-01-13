@@ -2,24 +2,25 @@ using System;
 using Core.Bricks;
 using Core.UI;
 using UnityEngine;
+using Utility.Pool;
 using Random = UnityEngine.Random;
 
 namespace Core.Ball
 {
-    public class Ball : MonoBehaviour
+    public class Ball : MonoBehaviour , IResettable
     {
         public Rigidbody Body => _rigidbody;
         
         [SerializeField] private float physicsAssistThickness;
         [SerializeField] private float randomAssistValue;
         [SerializeField] private LayerMask layerMask;
-        
+
+        private BallSpawner _ballSpawner;
         private Rigidbody _rigidbody;
         private UIManager _uiManager;
-
-
-        private void Start()
+        private void Awake()
         {
+            _ballSpawner = FindObjectOfType<BallSpawner>();
             _rigidbody = GetComponent<Rigidbody>();
             _uiManager = FindObjectOfType<UIManager>();
         }
@@ -51,7 +52,19 @@ namespace Core.Ball
                 }
                 explodable.gameObject.layer = 9; // Exploded Layer
             }
+            _ballSpawner.ballPool.Release(this);
         }
 
+        private void OnBecameInvisible()
+        {
+            _ballSpawner.ballPool.Release(this);
+        }
+
+        public void Reset()
+        {
+            Body.velocity = Vector3.zero;
+            Body.angularVelocity = Vector3.zero;
+            gameObject.SetActive(false);
+        }
     }
 }

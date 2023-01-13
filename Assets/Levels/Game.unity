@@ -1648,6 +1648,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6afae511d7194e03aec0cc15a1aadb95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  winRate: 95
   coinText: {fileID: 1335303450}
   levelText: {fileID: 1302280565}
   levelCompleteProgress: {fileID: 2663444679247948391}

@@ -1,17 +1,22 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Core.Draw
 {
     public class DrawMesh : MonoBehaviour
     {
+        public static event Action onStartDraw; 
+        public static event Action onFinishDraw; 
         public DrawSo drawSo;
         private Camera _cam;
         private CancellationTokenSource _drawingCancellationTokenSource;
         private GameObject _drawing;
         private Vector3 _lastMousePosition;
+        
 
         private void Start()
         {
@@ -22,11 +27,13 @@ namespace Core.Draw
         {
             if (Input.GetMouseButtonDown(0))
             {
+                onStartDraw?.Invoke();
                 _drawingCancellationTokenSource = new CancellationTokenSource();
                 Draw();
             }
             if (Input.GetMouseButtonUp(0))
             {
+                onFinishDraw?.Invoke();
                 _drawingCancellationTokenSource.Cancel();
             }
         }

@@ -8,6 +8,7 @@ namespace Core.UI
 {
     public class UIManager : MonoBehaviour
     {
+        [SerializeField] private int winRate;
         [SerializeField] private TextMeshProUGUI coinText;
         [SerializeField] private TextMeshProUGUI levelText;
         [SerializeField] private Slider levelCompleteProgress;
@@ -42,6 +43,10 @@ namespace Core.UI
         private void SetProgress()
         {
             levelCompleteProgress.value = Mathf.InverseLerp(0, _brickManager.GetBrickList, _brickManager.ExplodedBrick);
+            if (levelCompleteProgress.value>(winRate*.01))
+            {
+                Debug.Log("Win");
+            }
         }
     }
 }
