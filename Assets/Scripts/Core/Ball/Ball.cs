@@ -1,5 +1,6 @@
 using System;
 using Core.Bricks;
+using Core.UI;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -14,12 +15,13 @@ namespace Core.Ball
         [SerializeField] private LayerMask layerMask;
         
         private Rigidbody _rigidbody;
-
+        private UIManager _uiManager;
 
 
         private void Start()
         {
             _rigidbody = GetComponent<Rigidbody>();
+            _uiManager = FindObjectOfType<UIManager>();
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -31,7 +33,7 @@ namespace Core.Ball
 
             if (collision.transform.CompareTag("Platform"))
             {
-                _rigidbody.AddForce((new Vector3(10, 2) * Random.Range(1,randomAssistValue)) * physicsAssistThickness);
+                _rigidbody.AddForce((new Vector3(10, 0)  * physicsAssistThickness));
             }
         }
 

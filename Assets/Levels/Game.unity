@@ -1648,7 +1648,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6afae511d7194e03aec0cc15a1aadb95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coinText: {fileID: 0}
+  coinText: {fileID: 1335303450}
+  levelText: {fileID: 1302280565}
+  levelCompleteProgress: {fileID: 2663444679247948391}
 --- !u!1 &135238263
 GameObject:
   m_ObjectHideFlags: 0
@@ -5005,7 +5007,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.56, y: 7.15, z: -19.53}
+  m_LocalPosition: {x: 1.56, y: 7.15, z: -30.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5903,8 +5905,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 371279708}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.1404, y: -5.4456, z: 0}
-  m_LocalScale: {x: 19.436455, y: 10.444182, z: 5.3741}
+  m_LocalPosition: {x: 5.4758, y: -8.0697, z: 0}
+  m_LocalScale: {x: 20.86006, y: 15.693111, z: 5.3741}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -16020,6 +16022,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1145404956}
   - component: {fileID: 1145404955}
+  - component: {fileID: 1145404957}
   m_Layer: 0
   m_Name: ImageToObject
   m_TagString: Untagged
@@ -16058,6 +16061,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1145404957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145404954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c022cb2adab744b18bd93c03f79b497b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  brickList: []
 --- !u!1 &1163496849
 GameObject:
   m_ObjectHideFlags: 0
