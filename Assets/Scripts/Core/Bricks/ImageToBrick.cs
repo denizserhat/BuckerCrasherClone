@@ -12,6 +12,7 @@ namespace Utility
         
         [SerializeField] private GameObject brickPrefab;
         [SerializeField] private Color[] pixels;
+        
         private BrickManager _brickManager;
         private LevelManager _levelManager;
 
