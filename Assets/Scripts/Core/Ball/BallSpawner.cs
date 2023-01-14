@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Core.Draw;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -13,9 +14,24 @@ namespace Core.Ball
         [SerializeField] private Ball spawnObject;
         [SerializeField] private float spawnTime;
         
-        public Pool<Ball> ballPool;
+        public Pool<Ball> BallPool;
 
-        private bool isDrawing;
+        private bool _isDrawing;
+        private CancellationTokenSource _drawingCancellationTokenSource;
+        private GameManager _manager;
+
+
+        private void Awake()
+        {
+            _manager = FindObjectOfType<GameManager>();
+        }
+
+        private void Start()
+        {
+            BallPool = new Pool<Ball>(new PrefabFactory<Ball>(spawnObject.gameObject, transform, "Ball"));
+            _drawingCancellationTokenSource = new CancellationTokenSource();
+            Spawn();
+        }
         private void OnEnable()
         {
             DrawMesh.onStartDraw += StartDraw;
@@ -26,38 +42,32 @@ namespace Core.Ball
             DrawMesh.onStartDraw -= StartDraw;
             DrawMesh.onFinishDraw -= EndDraw;
         }
-        private void Start()
-        {
-            ballPool = new Pool<Ball>(new PrefabFactory<Ball>(spawnObject.gameObject, transform, "Ball"));
-            Spawn();
-        }
-
         private void StartDraw()
         {
-            isDrawing = true;
+            _isDrawing = true;
+            _drawingCancellationTokenSource.Cancel();
         }
 
         private void EndDraw()
         {
-            isDrawing = false;
+            _isDrawing = false;
+            _drawingCancellationTokenSource = new CancellationTokenSource();
             Spawn();
         }
 
         private async void Spawn()
         {
-            while (!isDrawing)
+            while (!_isDrawing && _manager.gameState != GameState.Finished)
             {
-                var ball = ballPool.Allocate();
-                ball.gameObject.SetActive(true);
-                ball.transform.position = transform.position;
-
-                await UniTask.Delay(TimeSpan.FromSeconds(spawnTime));
+                await UniTask.Delay(TimeSpan.FromSeconds(spawnTime), cancellationToken: _drawingCancellationTokenSource.Token).SuppressCancellationThrow();
+                if (!_drawingCancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    var ball = BallPool.Allocate();
+                    ball.gameObject.SetActive(true);
+                    ball.transform.position = transform.position;
+                }
+  
             }
-
         }
-
-
-        
-        
     }
 }

@@ -1,26 +1,37 @@
+using System;
+using Core;
 using Core.Bricks;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Utility
 {
-    public class ImageToObject : MonoBehaviour
+    public class ImageToBrick : MonoBehaviour
     {
-        public Texture2D image;
+        public Texture2D[] images;
         
         [SerializeField] private GameObject brickPrefab;
         [SerializeField] private Color[] pixels;
         private BrickManager _brickManager;
-        
-    
-        private void Start()
+        private LevelManager _levelManager;
+
+
+        private void Awake()
         {
             _brickManager = GetComponent<BrickManager>();
+            _levelManager = FindObjectOfType<LevelManager>();
+        }
+
+        private void Start()
+        {
             CreateObject();
         }
 
         private void CreateObject()
         {
-            pixels = image.GetPixels();
+            var selectedImage = _levelManager.Level<images.Length ? images[_levelManager.Level] : images[Random.Range(0,images.Length)];
+            pixels = selectedImage.GetPixels();
+            
             for (int i = 0; i < pixels.Length; i++)
             {
                 bool isTransparent = pixels[i] == Color.clear;
@@ -30,12 +41,12 @@ namespace Utility
                 GameObject cube = Instantiate(brickPrefab,transform);
                 MeshRenderer meshRenderer = cube.GetComponent<MeshRenderer>();
                 meshRenderer.material.color = pixels[i];
-                int x = i % image.width;
-                int y = i / image.height;
+                int x = i % selectedImage.width;
+                int y = i / selectedImage.height;
                 Brick brick = cube.GetComponent<Brick>();
                 _brickManager.brickList.Add(brick);
                 var localScale = cube.transform.localScale;
-                cube.transform.position = new Vector3(localScale.x * x, localScale.x * y, 0);
+                cube.transform.localPosition = new Vector3(localScale.x * x, localScale.x * y, 0);
             }
         }
     }

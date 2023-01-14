@@ -1,6 +1,4 @@
-using System;
 using Core.Bricks;
-using Core.UI;
 using UnityEngine;
 using Utility.Pool;
 using Random = UnityEngine.Random;
@@ -17,12 +15,11 @@ namespace Core.Ball
 
         private BallSpawner _ballSpawner;
         private Rigidbody _rigidbody;
-        private UIManager _uiManager;
+        
         private void Awake()
         {
             _ballSpawner = FindObjectOfType<BallSpawner>();
             _rigidbody = GetComponent<Rigidbody>();
-            _uiManager = FindObjectOfType<UIManager>();
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -34,15 +31,19 @@ namespace Core.Ball
 
             if (collision.transform.CompareTag("Platform"))
             {
-                _rigidbody.AddForce((new Vector3(10, 0)  * physicsAssistThickness));
+                _rigidbody.AddForce((new Vector3(10, 1) * Random.Range(1,randomAssistValue)) * (physicsAssistThickness));
+            }
+            if (collision.transform.CompareTag("Ground"))
+            {
+                _ballSpawner.BallPool.Release(this);
             }
         }
 
         private void Explode()
         {
-            Collider[] exploables = Physics.OverlapSphere(transform.position, 1.3f,layerMask);
+            Collider[] explodables = Physics.OverlapSphere(transform.position, 1.4f,layerMask);
 
-            foreach (Collider explodable in exploables)
+            foreach (Collider explodable in explodables)
             {
                 if (explodable.TryGetComponent<IExplodable>(out var brick) && !brick.IsExploded)
                 {
@@ -52,12 +53,12 @@ namespace Core.Ball
                 }
                 explodable.gameObject.layer = 9; // Exploded Layer
             }
-            _ballSpawner.ballPool.Release(this);
+            _ballSpawner.BallPool.Release(this);
         }
 
         private void OnBecameInvisible()
         {
-            _ballSpawner.ballPool.Release(this);
+            _ballSpawner.BallPool.Release(this);
         }
 
         public void Reset()

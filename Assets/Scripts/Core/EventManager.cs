@@ -6,8 +6,8 @@ namespace Core
 {
     public static class EventManager
     {
-        public static event Action onLevelProgress;
+        public static event Action onGoldUpdate;
         
-        public static void OnLevelProgress() => onLevelProgress?.Invoke();
+        public static void OnGoldUpdate() => onGoldUpdate?.Invoke();
     }
 }

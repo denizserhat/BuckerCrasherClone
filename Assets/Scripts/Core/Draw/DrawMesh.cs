@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Core.Draw
@@ -12,11 +11,18 @@ namespace Core.Draw
         public static event Action onStartDraw; 
         public static event Action onFinishDraw; 
         public DrawSo drawSo;
+        
         private Camera _cam;
         private CancellationTokenSource _drawingCancellationTokenSource;
         private GameObject _drawing;
         private Vector3 _lastMousePosition;
-        
+        private GameManager _manager;
+
+
+        private void Awake()
+        {
+            _manager = FindObjectOfType<GameManager>();
+        }
 
         private void Start()
         {
@@ -25,19 +31,21 @@ namespace Core.Draw
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (_manager.gameState!= GameState.Finished)
             {
-                onStartDraw?.Invoke();
-                _drawingCancellationTokenSource = new CancellationTokenSource();
-                Draw();
-            }
-            if (Input.GetMouseButtonUp(0))
-            {
-                onFinishDraw?.Invoke();
-                _drawingCancellationTokenSource.Cancel();
+                if (Input.GetMouseButtonDown(0))
+                {
+                    onStartDraw?.Invoke();
+                    _drawingCancellationTokenSource = new CancellationTokenSource();
+                    Draw();
+                }
+                if (Input.GetMouseButtonUp(0))
+                {
+                    onFinishDraw?.Invoke();
+                    _drawingCancellationTokenSource.Cancel();
+                }
             }
         }
-
 
         private async void Draw()
         {
@@ -49,12 +57,10 @@ namespace Core.Draw
             _drawing.AddComponent<MeshFilter>();
             _drawing.AddComponent<MeshRenderer>();
 
-            
             Vector3 startPosition =
                 _cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y,  -_cam.transform.position.z));
-            Vector3 temp = new Vector3(startPosition.x, startPosition.y, 0.5f);
+            Vector3 temp = new Vector3(startPosition.x, startPosition.y, 0);
 
-            
             Mesh mesh = new Mesh();
             List<Vector3> vertices =  new List<Vector3>(new Vector3[8]);
             
@@ -70,7 +76,6 @@ namespace Core.Draw
             while (!_drawingCancellationTokenSource.IsCancellationRequested)
             {
                 
-
                 #region Distance
 
                 var position = _cam.transform.position;
@@ -101,6 +106,7 @@ namespace Core.Draw
 
                 #endregion
                 
+                mesh.RecalculateNormals();
                 _drawing.GetComponent<MeshFilter>().mesh = mesh;
                 _drawing.GetComponent<Renderer>().material = drawSo.shapeMaterial;
                 
