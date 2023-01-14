@@ -10,7 +10,7 @@ namespace Core.Draw
     public class DrawMesh : MonoBehaviour
     {
         public static event Action onStartDraw; 
-        public static event Action onFinishDraw; 
+        public static event Action<Transform> onFinishDraw; 
         public DrawSo drawSo;
         
         private Camera _cam;
@@ -42,11 +42,11 @@ namespace Core.Draw
                 }
                 if (Input.GetMouseButtonUp(0))
                 {
-                    onFinishDraw?.Invoke();
                     StopCoroutine(_drawCoroutine);
                     _drawing.AddComponent<MeshCollider>();
                     _drawing.gameObject.layer = 8; // Platform Layer
                     _drawing.transform.tag = "Platform";
+                    onFinishDraw?.Invoke(_drawing.transform);
                 }
             }
         }

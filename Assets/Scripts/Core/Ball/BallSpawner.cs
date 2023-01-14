@@ -14,10 +14,12 @@ namespace Core.Ball
         [SerializeField] private float spawnTime;
         
         public Pool<Ball> BallPool;
-
+        
+        private Transform _drawTransform;
         private bool _isDrawing = true;
         private CancellationTokenSource _drawingCancellationTokenSource;
         private GameManager _manager;
+
 
 
         private void Awake()
@@ -47,8 +49,9 @@ namespace Core.Ball
             _drawingCancellationTokenSource.Cancel();
         }
 
-        private void EndDraw()
+        private void EndDraw(Transform drawObject)
         {
+            _drawTransform = drawObject;
             _isDrawing = false;
             _drawingCancellationTokenSource = new CancellationTokenSource();
             Spawn();
@@ -63,7 +66,8 @@ namespace Core.Ball
                 {
                     var ball = BallPool.Allocate();
                     ball.gameObject.SetActive(true);
-                    ball.transform.position = transform.position;
+                    ball.transform.position = new Vector3(transform.position.x,transform.position.y,_drawTransform.position.z);
+                    
                 }
   
             }
