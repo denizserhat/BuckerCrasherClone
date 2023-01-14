@@ -10,13 +10,12 @@ namespace Core.Ball
 {
     public class BallSpawner : MonoBehaviour
     {
-        
         [SerializeField] private Ball spawnObject;
         [SerializeField] private float spawnTime;
         
         public Pool<Ball> BallPool;
 
-        private bool _isDrawing;
+        private bool _isDrawing = true;
         private CancellationTokenSource _drawingCancellationTokenSource;
         private GameManager _manager;
 

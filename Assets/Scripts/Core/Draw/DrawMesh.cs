@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace Core.Draw
         public DrawSo drawSo;
         
         private Camera _cam;
-        private CancellationTokenSource _drawingCancellationTokenSource;
+        private Coroutine _drawCoroutine;
         private GameObject _drawing;
         private Vector3 _lastMousePosition;
         private GameManager _manager;
@@ -36,18 +37,21 @@ namespace Core.Draw
                 if (Input.GetMouseButtonDown(0))
                 {
                     onStartDraw?.Invoke();
-                    _drawingCancellationTokenSource = new CancellationTokenSource();
-                    Draw();
+                   _lastMousePosition = _cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y,  -_cam.transform.position.z));
+                   _drawCoroutine = StartCoroutine(Draw());
                 }
                 if (Input.GetMouseButtonUp(0))
                 {
                     onFinishDraw?.Invoke();
-                    _drawingCancellationTokenSource.Cancel();
+                    StopCoroutine(_drawCoroutine);
+                    _drawing.AddComponent<MeshCollider>();
+                    _drawing.gameObject.layer = 8; // Platform Layer
+                    _drawing.transform.tag = "Platform";
                 }
             }
         }
 
-        private async void Draw()
+        private IEnumerator Draw()
         {
             if (_drawing != null)
             {
@@ -73,7 +77,7 @@ namespace Core.Draw
             mesh.vertices = vertices.ToArray();
             mesh.triangles = triangles.ToArray();
             
-            while (!_drawingCancellationTokenSource.IsCancellationRequested)
+            while (true)
             {
                 
                 #region Distance
@@ -90,7 +94,7 @@ namespace Core.Draw
                     distance =
                         Vector3.Distance(_cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y,  -position.z)),
                             _lastMousePosition);
-                    await UniTask.Yield();
+                    yield return null;
                 }
 
                 #endregion
@@ -110,11 +114,8 @@ namespace Core.Draw
                 _drawing.GetComponent<MeshFilter>().mesh = mesh;
                 _drawing.GetComponent<Renderer>().material = drawSo.shapeMaterial;
                 
-                await UniTask.Yield(cancellationToken: _drawingCancellationTokenSource.Token).SuppressCancellationThrow();
+                yield return null;
             }
-            _drawing.AddComponent<MeshCollider>();
-            _drawing.gameObject.layer = 8; // Platform Layer
-            _drawing.transform.tag = "Platform";
         }
 
         private List<int> SetTriangles()
