@@ -1,10 +1,14 @@
 ﻿using System;
+using Core.UI;
 using UnityEngine;
 
 namespace Core.Converter
 {
     public class BrickConverter : MonoBehaviour
     {
+        public static event Action<Vector3> onMoneyUpdate;
+        public static void OnMoneyUpdate(Vector3 startPos) => onMoneyUpdate?.Invoke(startPos);
+        
         [SerializeField] private GameObject coinPrefab;
         [SerializeField] private Transform coinSpawnPoint;
         
@@ -35,7 +39,7 @@ namespace Core.Converter
                 var coin = Instantiate(coinPrefab);
                 coin.transform.position = coinSpawnPoint.position;
                 _manager.gold.Increase(5);
-                EventManager.OnMoneyUpdate(_mainCam.WorldToScreenPoint(coinSpawnPoint.position));
+                onMoneyUpdate?.Invoke(coinSpawnPoint.position);
                 _brickCount = 0;
             }
         }

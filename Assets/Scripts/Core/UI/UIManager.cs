@@ -1,5 +1,6 @@
 ﻿using System;
 using Core.Bricks;
+using Core.Converter;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using TMPro;
@@ -14,6 +15,7 @@ namespace Core.UI
 {
     public class UIManager : MonoBehaviour
     {
+        
         [SerializeField] private int winRate;
         [SerializeField] private TextMeshProUGUI coinText;
         [SerializeField] private TextMeshProUGUI levelText;
@@ -25,7 +27,7 @@ namespace Core.UI
         private BrickManager _brickManager;
         private GameManager _gameManager;
         private LevelManager _levelManager;
-        private Pool<AnimationPool> _animationPool;
+        private Pool<AnimationUIPool> _animationPool;
         private Camera _mainCam;
 
 
@@ -34,7 +36,7 @@ namespace Core.UI
             _brickManager = FindObjectOfType<BrickManager>();
             _gameManager = FindObjectOfType<GameManager>();
             _levelManager = FindObjectOfType<LevelManager>();
-            _animationPool = new Pool<AnimationPool>(new PrefabFactory<AnimationPool>(goldImagePrefab, transform));
+            _animationPool = new Pool<AnimationUIPool>(new PrefabFactory<AnimationUIPool>(goldImagePrefab, transform));
         }
 
         private void Start()
@@ -47,13 +49,13 @@ namespace Core.UI
         private void OnEnable()
         {
             Brick.onExploaded += OnBrickExploded;
-            EventManager.onMoneyUpdate += OnMoneyCollect;
+            BrickConverter.onMoneyUpdate += OnMoneyCollect;
         }
         
         private void OnDisable()
         {
             Brick.onExploaded -= OnBrickExploded;
-            EventManager.onMoneyUpdate -= OnMoneyCollect;
+            BrickConverter.onMoneyUpdate -= OnMoneyCollect;
         }
 
         private void OnBrickExploded(Brick brick)
@@ -64,7 +66,7 @@ namespace Core.UI
 
         private void SetProgress()
         {
-            levelCompleteProgress.value = Mathf.InverseLerp(0, _brickManager.GetBrickList, _brickManager.ExplodedBrick);
+            levelCompleteProgress.value = Mathf.InverseLerp(0, _brickManager.BrickCount, _brickManager.ExplodedBrick);
             if (levelCompleteProgress.value>(winRate*.01))
             {
                 _gameManager.gameState = GameState.Finished;

@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Core.Bricks
 {
@@ -16,7 +15,12 @@ namespace Core.Bricks
         public bool IsExploded
         {
             get => _isExploded;
-            set { _isExploded = value; onExploaded?.Invoke(this); }
+            set 
+            { 
+                _isExploded = value;
+                if (_isExploded)
+                    onExploaded?.Invoke(this);
+            }
         }
         
         private void Start()

@@ -8,7 +8,7 @@ namespace Core.Bricks
     public class BrickManager : MonoBehaviour
     {
         public List<Brick> brickList;
-        public int GetBrickList => brickList.Count;
+        public int BrickCount => brickList.Count;
 
         public int ExplodedBrick { get; set; }
         
