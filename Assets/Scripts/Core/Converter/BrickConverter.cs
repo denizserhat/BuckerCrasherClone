@@ -39,7 +39,7 @@ namespace Core.Converter
                 var coin = Instantiate(coinPrefab);
                 coin.transform.position = coinSpawnPoint.position;
                 _manager.gold.Increase(5);
-                onMoneyUpdate?.Invoke(coinSpawnPoint.position);
+                onMoneyUpdate?.Invoke(_mainCam.WorldToScreenPoint(coinSpawnPoint.position));
                 _brickCount = 0;
             }
         }
