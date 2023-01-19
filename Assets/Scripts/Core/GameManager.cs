@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Core
 {
-
     public enum GameState
     {
         Started,
@@ -11,7 +10,6 @@ namespace Core
     }
     public class GameManager : MonoBehaviour
     {
-        public IntVariable gold;
         public GameState gameState;
     }
 }

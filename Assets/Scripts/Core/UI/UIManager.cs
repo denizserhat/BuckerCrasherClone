@@ -1,6 +1,7 @@
 ﻿using System;
 using Core.Bricks;
 using Core.Converter;
+using Core.Variables;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using TMPro;
@@ -23,6 +24,7 @@ namespace Core.UI
         [SerializeField] private GameObject nextLevelUI;
         [SerializeField] private GameObject goldImagePrefab;
         [SerializeField] private Image goldImage;
+        [SerializeField] private IntVariable gold;
         
         private BrickManager _brickManager;
         private GameManager _gameManager;
@@ -77,7 +79,7 @@ namespace Core.UI
         private void UpdateGold()
         {
             var value = int.Parse(coinText.text);
-            var endValue = _gameManager.gold.value;
+            var endValue = gold.value;
             DOTween.To(() => value, x => value = x, endValue, .2f).OnUpdate(() =>
             {
                 coinText.text = value.ToString();

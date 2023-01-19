@@ -1,5 +1,5 @@
 ﻿using System;
-using Core.UI;
+using Core.Variables;
 using UnityEngine;
 
 namespace Core.Converter
@@ -7,11 +7,10 @@ namespace Core.Converter
     public class BrickConverter : MonoBehaviour
     {
         public static event Action<Vector3> onMoneyUpdate;
-        public static void OnMoneyUpdate(Vector3 startPos) => onMoneyUpdate?.Invoke(startPos);
-        
         [SerializeField] private GameObject coinPrefab;
         [SerializeField] private Transform coinSpawnPoint;
-        
+        [SerializeField] private IntVariable gold;
+
         private int _brickCount;
         private GameManager _manager;
         private Camera _mainCam;
@@ -38,7 +37,7 @@ namespace Core.Converter
             {
                 var coin = Instantiate(coinPrefab);
                 coin.transform.position = coinSpawnPoint.position;
-                _manager.gold.Increase(5);
+                gold.Increase(5);
                 onMoneyUpdate?.Invoke(_mainCam.WorldToScreenPoint(coinSpawnPoint.position));
                 _brickCount = 0;
             }
