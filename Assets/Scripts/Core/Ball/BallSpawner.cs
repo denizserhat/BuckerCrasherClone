@@ -18,13 +18,20 @@ namespace Core.Ball
         private Transform _drawTransform;
         private bool _isDrawing = true;
         private CancellationTokenSource _drawingCancellationTokenSource;
-        private GameManager _manager;
-
-
-
-        private void Awake()
+        private GameState _currentState;
+        
+        private void OnEnable()
         {
-            _manager = FindObjectOfType<GameManager>();
+            DrawMesh.onStartDraw += StartDraw;
+            DrawMesh.onFinishDraw += EndDraw;
+            GameStateHandler.onStateChanged += OnStateChanged;
+        }
+        
+        private void OnDisable()
+        {
+            DrawMesh.onStartDraw -= StartDraw;
+            DrawMesh.onFinishDraw -= EndDraw;
+            GameStateHandler.onStateChanged -= OnStateChanged;
         }
 
         private void Start()
@@ -33,22 +40,18 @@ namespace Core.Ball
             _drawingCancellationTokenSource = new CancellationTokenSource();
             Spawn();
         }
-        private void OnEnable()
-        {
-            DrawMesh.onStartDraw += StartDraw;
-            DrawMesh.onFinishDraw += EndDraw;
-        }
-        private void OnDisable()
-        {
-            DrawMesh.onStartDraw -= StartDraw;
-            DrawMesh.onFinishDraw -= EndDraw;
-        }
+
         private void StartDraw()
         {
             _isDrawing = true;
             _drawingCancellationTokenSource.Cancel();
         }
 
+        private void OnStateChanged(GameState newState)
+        {
+            _currentState = newState;
+        }
+        
         private void EndDraw(Transform drawObject)
         {
             _drawTransform = drawObject;
@@ -59,7 +62,7 @@ namespace Core.Ball
 
         private async void Spawn()
         {
-            while (!_isDrawing && _manager.gameState != GameState.Finished)
+            while (!_isDrawing && _currentState != GameState.Finished)
             {
                 await UniTask.Delay(TimeSpan.FromSeconds(spawnTime), cancellationToken: _drawingCancellationTokenSource.Token).SuppressCancellationThrow();
                 if (!_drawingCancellationTokenSource.Token.IsCancellationRequested)

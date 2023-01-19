@@ -12,12 +12,10 @@ namespace Core.Converter
         [SerializeField] private IntVariable gold;
 
         private int _brickCount;
-        private GameManager _manager;
         private Camera _mainCam;
 
         private void Awake()
         {
-            _manager = FindObjectOfType<GameManager>();
             _mainCam = Camera.main;
         }
 

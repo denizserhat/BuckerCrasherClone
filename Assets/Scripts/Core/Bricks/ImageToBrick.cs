@@ -1,9 +1,7 @@
-using Core;
-using Core.Bricks;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Utility
+namespace Core.Bricks
 {
     public class ImageToBrick : MonoBehaviour
     {

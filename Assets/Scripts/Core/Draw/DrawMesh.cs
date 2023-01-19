@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Core.Draw
@@ -17,12 +15,21 @@ namespace Core.Draw
         private Coroutine _drawCoroutine;
         private GameObject _drawing;
         private Vector3 _lastMousePosition;
-        private GameManager _manager;
+        private GameState _currentState;
 
-
-        private void Awake()
+        private void OnEnable()
         {
-            _manager = FindObjectOfType<GameManager>();
+            GameStateHandler.onStateChanged += OnStateChanged;
+        }
+
+        private void OnDisable()
+        {
+            GameStateHandler.onStateChanged -= OnStateChanged;
+        }
+
+        private void OnStateChanged(GameState newState)
+        {
+            _currentState = newState;
         }
 
         private void Start()
@@ -32,7 +39,7 @@ namespace Core.Draw
 
         private void Update()
         {
-            if (_manager.gameState!= GameState.Finished)
+            if (_currentState != GameState.Finished)
             {
                 if (Input.GetMouseButtonDown(0))
                 {

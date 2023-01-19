@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using System;
 
 namespace Core
 {
@@ -7,8 +7,19 @@ namespace Core
         Started,
         Finished
     }
-    public class GameManager : MonoBehaviour
+    public static class GameStateHandler
     {
-        public GameState gameState;
+        public static event Action<GameState> onStateChanged;
+
+        private static GameState gameState;
+        public static  GameState GameState
+        {
+            get => gameState;
+            set
+            {
+                gameState = value;
+                onStateChanged?.Invoke(gameState);
+            }
+        }
     }
 }

@@ -1,11 +1,9 @@
-﻿using System;
-using Core.Bricks;
+﻿using Core.Bricks;
 using Core.Converter;
 using Core.Variables;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -27,7 +25,6 @@ namespace Core.UI
         [SerializeField] private IntVariable gold;
         
         private BrickManager _brickManager;
-        private GameManager _gameManager;
         private LevelManager _levelManager;
         private Pool<AnimationUIPool> _animationPool;
         private Camera _mainCam;
@@ -36,7 +33,6 @@ namespace Core.UI
         private void Awake()
         {
             _brickManager = FindObjectOfType<BrickManager>();
-            _gameManager = FindObjectOfType<GameManager>();
             _levelManager = FindObjectOfType<LevelManager>();
             _animationPool = new Pool<AnimationUIPool>(new PrefabFactory<AnimationUIPool>(goldImagePrefab, transform));
         }
@@ -71,7 +67,7 @@ namespace Core.UI
             levelCompleteProgress.value = Mathf.InverseLerp(0, _brickManager.BrickCount, _brickManager.ExplodedBrick);
             if (levelCompleteProgress.value>(winRate*.01))
             {
-                _gameManager.gameState = GameState.Finished;
+                GameStateHandler.GameState = GameState.Finished;
                 LoadNextUI();
             }
         }
