@@ -6,8 +6,8 @@ namespace Core
     {
         public int Level
         {
-            get => PlayerPrefs.GetInt("Level");
-            set => PlayerPrefs.SetInt("Level",value);
+            get => PlayerPrefs.GetInt(Constants.LevelSaveKey);
+            set => PlayerPrefs.SetInt(Constants.LevelSaveKey, value);
         }
 
         public int LevelUI => Level + 1;

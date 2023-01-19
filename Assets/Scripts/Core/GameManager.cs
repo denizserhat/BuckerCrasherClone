@@ -1,5 +1,4 @@
-﻿using Core.Variables;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Core
 {
