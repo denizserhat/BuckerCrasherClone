@@ -37,7 +37,7 @@ namespace Core.Bricks
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (collision.transform.CompareTag("Ground"))
+            if (collision.transform.CompareTag(Constants.GroundTag))
             {
                 _isGround = true;
             }
