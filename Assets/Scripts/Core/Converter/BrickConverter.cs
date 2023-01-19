@@ -21,7 +21,7 @@ namespace Core.Converter
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (collision.transform.CompareTag("Brick"))
+            if (collision.transform.CompareTag(Constants.BrickTag))
             {
                 Destroy(collision.gameObject);
                 _brickCount++;
