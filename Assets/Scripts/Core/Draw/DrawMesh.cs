@@ -52,7 +52,7 @@ namespace Core.Draw
                     StopCoroutine(_drawCoroutine);
                     _drawing.AddComponent<MeshCollider>();
                     _drawing.gameObject.layer = 8; // Platform Layer
-                    _drawing.transform.tag = "Platform";
+                    _drawing.transform.tag = Constants.PlatformTag;
                     onFinishDraw?.Invoke(_drawing.transform);
                 }
             }
